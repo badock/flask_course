@@ -143,9 +143,29 @@ resources:
 
             <p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté au début du présent document.</p>
 
-<h3> III- Contraintes </h3>
+            <h3> III- Cahier des charges </h3>
 
-<p><ul>
+            <p>Le cahier des charges est relativement simple. Il s'agit de pouvoir créer des nouvelles configurations en demandant à l'utilisateur de fournir la partie mutable de la configuration et de sauvegarder ce qu'il a spécifié. L'utilisateur pourra ensuite télécharger la configuration qui contiendra alors la partie mutable (qu'il a spécifiée), ainsi que la partie immutable (qui aura été ajoutée en se basant sur une template), retrouvant ainsi le fichier yaml nécessaire au démarrage de l'outil Enos.</p>
+
+
+            <p>Nous vous conseillons d'organiser le travail de la manière suivante:
+                <ol>
+                    <li>Gestion de la collection de configurations (creation d'une nouvelle configuration, lister l'ensemble des configurations enregistrées, édition d'une configuration existante et enfin téléchargement d'une configuration au format yaml).</li>
+                    <li>Edition avancée d'une configuration - il s'agira ici de fournir les abstractions graphiques permettant de guider l'utilisateur dans les modifications (correcteur syntaxique en javascript afin de remonter une erreur à l'utilisateur lui empechant de valider les modifications)</li>
+                </ol>
+            </p>
+
+            <p>De manière générale:
+                <ul>
+                <li><b>Les points suivants seront attendus</b>: facilité de création d'une configuration en utilisant Flask + HTML + CSS</li>
+                <li><b>Les points suivants seront appréciés</b>: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, vérification de la syntaxe de la configuration, code dynamique (Ajax), ajout facilité d'ordinateurs et de rôles</li>
+                <li><b>Les points suivants sont en bonus, et seront très fortement appréciés</b>: drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a>, <a href="http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested"> un exemple en angularJS</a>), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>), utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ) </li>
+    </ul>
+            </p>
+
+            <h3> IV- Contraintes </h3>
+
+            <p><ul>
     <li>L'application devra se baser sur le framework Flask</li>
     <li>L'application devra pouvoir générer une configuration sous forme d'un document Yaml valide</li>
     <li>L'application devra mettre en oeuvre ce qui a été montré en cours, à savoir:
@@ -158,14 +178,11 @@ resources:
         </ul>
     </li>
     <li>Un accent devra être mis sur l'ergonomie de l'application</li>
-    <li><b>Les points suivants seront attendus</b>: facilité de création d'une configuration en utilisant Flask + HTML + CSS</li>
-    <li><b>Les points suivants seront appréciés</b>: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, code dynamique (Ajax)</li>
-    <li><b>Les points suivants sont en bonus, et seront très fortement appréciés</b>: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a>, <a href="http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested"> un exemple en angularJS</a>), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
-    </ul>
+
     </li>
 </ul></p>
 
-<h3> III- Quelques pistes ergonomiques</h3>
+<h3> V- Quelques pistes ergonomiques</h3>
 <h5>A- Intégrer une vue arborescente dans une page web</h5>
 <p><ul>
     <li><a href="https://www.jstree.com/">jsTree</a></li>
