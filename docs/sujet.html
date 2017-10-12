@@ -110,13 +110,15 @@ kolla:
   kolla_install_type: source
   docker_namespace: beyondtheclouds
   enable_heat: no
-</textarea>
+            </textarea>
 
-<p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 à 66 ne change pas), tandis qu'une légère partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure à déployer.</p>
+            <p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 à 66 ne change pas), tandis qu'une légère partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure à déployer.</p>
 
-<p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté ci-dessus.</p>
+            <h3> II- Objectif </h3>
 
-<h3> II- Contraintes </h3>
+            <p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté ci-dessus.</p>
+
+<h3> III- Contraintes </h3>
 
 <p><ul>
     <li>L'application devra se baser sur le framework Flask</li>
@@ -131,17 +133,14 @@ kolla:
         </ul>
     </li>
     <li>Un accent devra être mis sur l'ergonomie de l'application</li>
-    <li>Les points suivants seront fortement appréciés:<ul>
-        <li>Facilité de créer une configuration</li>
-        <li>Utilisation d'un plugin CSS</li>
-        <li>Utilisation d'un plugin Javascript</li>
-        <li>Code dynamique (Ajax)</li>
-        <li>Utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ) </li>
+    <li>Les points suivants seront attendus: facilité de création une configuration en utilisant Flask + HTML + CSS</li>
+    <li>Les points suivants seront appréciés: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, code dynamique (Ajax)</li>
+    <li>Le point suivant sera très fortement appréciés: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a> ), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
     </ul>
     </li>
 </ul></p>
 
-<h3> III- Pistes pour aller plus loin</h3>
+<h3> III- Quelques pistes ergonomiques</h3>
 <h5>A- Intégrer une vue arborescente dans une page web</h5>
 <p><ul>
     <li><a href="https://www.jstree.com/">jsTree</a></li>

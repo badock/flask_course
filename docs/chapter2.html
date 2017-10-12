@@ -93,7 +93,7 @@ def form_handler():
             <textarea class=code_no_line_numbers>
 from flask import url_for
 
-@app.route("/")from flask import request, url_for, make_response, redirect
+@app.route("/")
 def generate_form():
     html_code = """<form action="%s" method="post">
         <input name="task_text" type="text" placeholder="enter what you want to do"/>
