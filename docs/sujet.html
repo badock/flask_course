@@ -1,6 +1,5 @@
 <html>
     <head>
-        <meta charset="ISO-8859-1">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
@@ -31,18 +30,18 @@
         </div>
         <div class="col-10 main-content">
 
-            <h1>Conception d'un système d'information pour gérer des configurations Enos</h1>
-            <h5><i>(ou : "comment j'ai appris à ne plus m'en faire et à aimer générer des documents Yaml" <a href="https://fr.wikipedia.org/wiki/Docteur_Folamour"><sup>[ref]</sup></a>).</i></h5>
+            <h1>Conception d'un systÃ¨me d'information pour gÃ©rer des configurations Enos</h1>
+            <h5><i>(ou : "comment j'ai appris Ã  ne plus m'en faire et Ã  aimer gÃ©nÃ©rer des documents Yaml" <a href="https://fr.wikipedia.org/wiki/Docteur_Folamour"><sup>[ref]</sup></a>).</i></h5>
 
             <h3>I- Contexte</h3>
 
-            <p><a href="https://github.com/BeyondTheClouds/enos">Enos</a> est un outil permettant de déployer des infrastructures de <a href="https://fr.wikipedia.org/wiki/Cloud_computing">Cloud Computing</a> à partir d'un fichier <a href="https://fr.wikipedia.org/wiki/YAML">Yaml</a>.</p>
+            <p><a href="https://github.com/BeyondTheClouds/enos">Enos</a> est un outil permettant de dÃ©ployer des infrastructures de <a href="https://fr.wikipedia.org/wiki/Cloud_computing">Cloud Computing</a> Ã  partir d'un fichier <a href="https://fr.wikipedia.org/wiki/YAML">Yaml</a>.</p>
 
-            <p>Dans ce projet, nous vous demandons de développer un système d'information qui permet la gestion de configurations Enos.</p>
+            <p>Dans ce projet, nous vous demandons de dÃ©velopper un systÃ¨me d'information qui permet la gestion de configurations Enos.</p>
 
-            <p>Il devra permettre à l'utilisateur de créer, modifier, supprimer et eventuellement partager des configurations Enos.</p>
+            <p>Il devra permettre Ã  l'utilisateur de crÃ©er, modifier, supprimer et eventuellement partager des configurations Enos.</p>
 
-            <p>En ce qui concerne les configurations Enos, on peut les considérer comme un document Yaml. Un exemple complet ressemble à cela:</p>
+            <p>En ce qui concerne les configurations Enos, on peut les considÃ©rer comme un document Yaml. Un exemple complet ressemble Ã  cela:</p>
 
             <textarea class="code">
 ---
@@ -113,51 +112,51 @@ kolla:
   enable_heat: no
             </textarea>
 
-            <p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 à 66 ne change pas), tandis qu'une légère partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure à déployer.</p>
+            <p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 Ã  66 ne change pas), tandis qu'une lÃ©gÃ¨re partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure Ã  dÃ©ployer.</p>
 
             <h3> II- Objectif </h3>
 
-            <p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté ci-dessus.</p>
+            <p>Le systÃ¨me que vous allez dÃ©velopper devra permettre Ã  l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spÃ©cifier les ressources qu'il veut configurer, ainsi que les paramÃ¨tres rÃ©seau de son infrastructure. Au final, votre systÃ¨me devra gÃ©nÃ©rer un fichier Yaml qui ressemble Ã  celui prÃ©sentÃ© ci-dessus.</p>
 
 <h3> III- Contraintes </h3>
 
 <p><ul>
     <li>L'application devra se baser sur le framework Flask</li>
-    <li>L'application devra pouvoir générer une configuration sous forme d'un document Yaml valide</li>
-    <li>L'application devra mettre en oeuvre ce qui a été montré en cours, à savoir:
+    <li>L'application devra pouvoir gÃ©nÃ©rer une configuration sous forme d'un document Yaml valide</li>
+    <li>L'application devra mettre en oeuvre ce qui a Ã©tÃ© montrÃ© en cours, Ã  savoir:
         <ul>
-            <li>définitions de fonctions générant des vues</li>
-            <li>créations de formulaires</li>
+            <li>dÃ©finitions de fonctions gÃ©nÃ©rant des vues</li>
+            <li>crÃ©ations de formulaires</li>
             <li>utilisation des templates</li>
-            <li>stockage de données dans une base de données</li>
+            <li>stockage de donnÃ©es dans une base de donnÃ©es</li>
             <li>Utilisation d'un framework CSS et utilisation de Javascript</li>
         </ul>
     </li>
-    <li>Un accent devra être mis sur l'ergonomie de l'application</li>
-    <li>Les points suivants seront attendus: facilité de création une configuration en utilisant Flask + HTML + CSS</li>
-    <li>Les points suivants seront appréciés: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, code dynamique (Ajax)</li>
-    <li>Le point suivant sera très fortement appréciés: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a> ), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
+    <li>Un accent devra Ãªtre mis sur l'ergonomie de l'application</li>
+    <li>Les points suivants seront attendus: facilitÃ© de crÃ©ation une configuration en utilisant Flask + HTML + CSS</li>
+    <li>Les points suivants seront apprÃ©ciÃ©s: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, code dynamique (Ajax)</li>
+    <li>Le point suivant sera trÃ¨s fortement apprÃ©ciÃ©s: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a> ), composition de la configuration de maniÃ¨re trÃ¨s graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
     </ul>
     </li>
 </ul></p>
 
 <h3> III- Quelques pistes ergonomiques</h3>
-<h5>A- Intégrer une vue arborescente dans une page web</h5>
+<h5>A- IntÃ©grer une vue arborescente dans une page web</h5>
 <p><ul>
     <li><a href="https://www.jstree.com/">jsTree</a></li>
     <li><a href="https://github.com/zgs225/easy-tree">easyTree</a> (<a href="http://zgs225.github.io/easy-tree/">exemple</a> ) </li>
 </ul></p>
 
-<h5>B- Intégrer un éditeur de code source dans une page web</h5>
+<h5>B- IntÃ©grer un Ã©diteur de code source dans une page web</h5>
 <p><ul>
     <li><a href="https://codemirror.net">CodeMirror</a></li>
     <li><a href="https://codemirror.net/mode/yaml/">Plugin Yaml pour codeMirror</a></li>
 </ul></p>
 
 
-<h5>C- Jolis thèmes pour Bootstrap</h5>
+<h5>C- Jolis thÃ¨mes pour Bootstrap</h5>
 <ul>
-    <li>Thèmes pour bootstrap (<a href="https://bootswatch.com/4-alpha/">bootswatch</a>)</li>
+    <li>ThÃ¨mes pour bootstrap (<a href="https://bootswatch.com/4-alpha/">bootswatch</a>)</li>
     <li>SB Admin 2 (<a href="https://startbootstrap.com/template-overviews/sb-admin-2/">exemple</a>) </li>
 </ul>
 
