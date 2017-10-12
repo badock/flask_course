@@ -114,6 +114,31 @@ kolla:
 
             <p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 à 66 ne change pas), tandis qu'une légère partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure à déployer.</p>
 
+            <p>Dans l'exemple ci-dessus, nous déclarons une infrastructure de Cloud Computing qui contient 4 ordinateurs (computer-1, computer-2, computer-3, computer-4). Nous déclarons que computer-1 aura un rôle de contrôleur (<i>controller</i>), que computer-2 pilotera le réseau (<i>network</i>) et que computer-3 et computer-4 serviront de noeuds de calcul (<i>compute</i>). Nous spécifions pour chacun des noeuds un utilisateur à utiliser pour s'y connecter.</p>
+
+            <p>Enfin nous déclarons une configuration réseau : celle-ci est composée de deux réseaux (11.8.0.* et 11.8.1.*). Pour chaque réseau, nous déclarons les paramètres suivants : cidr, start, end, gateway, dns.</p>
+
+            <p>La structure de la partie mutable est toujours déclarée de la manière suivante:</p>
+            <textarea class="code_no_line_numbers">
+provider:
+  type: static
+  networks:
+  %pour chaque reseau dans la liste des reseaux%
+    {description du reseau}
+  %fin%
+  eths:
+    - eth0
+    - eth1
+
+resources:
+%pour chaque rôle dans la liste des rôles%
+  {nom du rôle}:
+  %pour chaque ordinateur ayant ce rôle%
+    {description de l'ordinateur}
+  %fin%
+%fin%
+            </textarea>
+
             <h3> II- Objectif </h3>
 
             <p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté ci-dessus.</p>
@@ -135,7 +160,7 @@ kolla:
     <li>Un accent devra être mis sur l'ergonomie de l'application</li>
     <li>Les points suivants seront attendus: facilité de création une configuration en utilisant Flask + HTML + CSS</li>
     <li>Les points suivants seront appréciés: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, code dynamique (Ajax)</li>
-    <li>Le point suivant sera très fortement appréciés: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a> ), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
+    <li>Les points suivants sont en bonus, et seront <b>très fortement</b> appréciés: utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ), drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a>, <a href="http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested"> un exemple en angularJS</a>), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>) </li>
     </ul>
     </li>
 </ul></p>
