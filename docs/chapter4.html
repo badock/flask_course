@@ -42,11 +42,30 @@
                 classes are defined for, usually, mapping each of the relational tables.</p>
 
             <p>This chapter will cover how to integrate Flask with <a href="https://www.sqlalchemy.org/">SQLAlchemy</a>,
-                the most
-                famous python ORM. Before proceeding, install the SQLAlchemy plugin for Flask, by running the following
-                in a Unix
-                terminal:</p>
-            <p><code>pip install Flask-SQLAlchemy==2.1</code></p>
+                the most famous python ORM. Before proceeding, install the SQLAlchemy plugin for Flask, by creating a <span class="badge badge-primary">requirements.txt</span> file and adding the following lines:</p>
+            <textarea class="code_no_line_numbers">Flask==0.10
+Flask-SQLAlchemy==2.1
+pysqlite</textarea>
+            <br/>
+
+            <div class="alert alert-danger" role="alert">
+                <p><strong>Warning!</strong> You may encounter an error while installing pysqlite (<i>ImportError: No module named pysqlite2</i>).</p>
+
+                <p>In this case, you need to install the sqlite package on your workspace. Open an Unix terminal, as in this screenshot:
+                    <br/>
+                    <img height="150px" src="assets/chapter4/chapter4_open_terminal.png"/>
+                    <br/>
+                    <br/>
+
+                    and enter the following command:
+                    <textarea class="code_no_line_numbers">sudo apt-get install -y libsqlite3-dev</textarea>
+                    <br/>
+
+                    as in the following screenshot:
+                    <br/>
+                    <img height="100px" src="assets/chapter4/chapter4_run_command.png"/>
+            </div>
+
 
             <p>Now, create a <span class="badge badge-primary">database.py</span> script that will contain the database
                 configuration and model classes' definitions:</p>
@@ -173,6 +192,27 @@ class Task(db.Model):
             <p>In this section, we will complete the existing application so that it can handle several task list.
                 Please take a
                 look a the modifications we made to the existing code.</p>
+
+            <p><span class="badge badge-primary">database.py</span>:</p>
+            <textarea class=code>
+from flask_sqlalchemy import SQLAlchemy
+from main import app
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+db = SQLAlchemy(app)
+
+class TaskList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    tasks = db.relationship('Task', backref='task_list', lazy='dynamic')
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    label = db.Column(db.Text)
+    isDone = db.Column(db.Boolean)
+    task_list_id = db.Column(db.Integer, db.ForeignKey('task_list.id'))
+</textarea>
+            <p></p>
 
             <p><span class="badge badge-primary">main.py</span>:</p>
             <textarea class=code>
