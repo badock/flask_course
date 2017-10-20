@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todolist</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        function increment_counter() {
+            $.ajax({
+                url: "/increment_counter",
+                dataType: "json",
+                success: function(response) {
+                    console.log("counter has been successfully incremented");
+                }
+            })
+        }
+
+        function fetch_and_update_counter() {
+            $.ajax({
+                url: "/fetch_counter",
+                dataType: "json",
+                success: function(response) {
+                    document.getElementById("counter-box").innerHTML = response["counter"];
+                }
+            })
+        }
+
+        setInterval(function(){
+            fetch_and_update_counter();
+        }, 2000)
+    </script>
+</head>
+<body>
+    <div id="counter-box">loading counter...</div>
+    <button onclick="increment_counter();">increment counter</button>
+</body>
+</html>
