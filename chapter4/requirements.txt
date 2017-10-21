@@ -1,5 +1,3 @@
 Flask==0.10
 Flask-SQLAlchemy==2.1
 pysqlite
-
-    sudo ifconfig lo0 alias 216.58.201.238
