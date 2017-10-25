@@ -169,7 +169,8 @@ body {
                 styling, which
                 enables an easier development of nice a web site.</p>
 
-            <p>To use Bootstrap, you have to add a css file and js file to the existing project. To proceed, go to <a
+    <p>To use Bootstrap, you have to add a css file and js file to the existing project.</p>
+    <!--<p>To proceed, go to <a
                     href="https://getbootstrap.com/docs/4.0/getting-started/download/">https://getbootstrap.com/docs/4.0/getting-started/download/</a>,
                 and Download the <b><i>Compiled</i> CSS and JS</b> version of bootstrap. Extract the archive, and do the
                 following:
@@ -182,6 +183,7 @@ body {
                 </li>
             </ul>
             </p>
+-->
 
             <p>Now modify the HTML template to make it look like this:</p>
             <textarea class=html_code_no_line_numbers>
@@ -192,6 +194,8 @@ body {
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>    
+    <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 
 </head>
