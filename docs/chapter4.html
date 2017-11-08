@@ -157,10 +157,10 @@ from database import Task
 Task.query.all() # gets a list containing all the tasks from database. If database is empty, returns []
 Task.query.first() # returns an task from database. If database is empty, returns None
 
-Task.filter(Task.id == 1).first() # returns the task whose ID value is equal to 1. If there is no result, returns none
-Task.filter_by(id=1).first() # same as previous query
+Task.query.filter(Task.id == 1).first() # returns the task whose ID value is equal to 1. If there is no result, returns none
+Task.query.filter_by(id=1).first() # same as previous query
 
-Task.filter_by(isDone=False).all() # returns all the tasks that are not done. If no result, returns []
+Task.query.filter_by(isDone=False).all() # returns all the tasks that are not done. If no result, returns []
 </textarea>
 
 
