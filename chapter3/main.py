@@ -1,15 +1,24 @@
 from flask import Flask
-from flask import request, url_for, redirect, session, render_template
+from flask import request, url_for, redirect, session
 app = Flask("firstFormApplication")
 app.secret_key = "very_important_secret"
 
 
 @app.route("/")
 def generate_form():
-    tasks = []
+
+    html_code = """<form action="%s" method="post">
+        <input name="task_text" type="text" placeholder="enter what you want to do"/>
+        <input type="submit"/>
+    </form>""" % (url_for("form_handler"))
+
     if "tasks" in session:
-        tasks = session["tasks"].split(":")
-    return render_template("simple_form.html", tasks=tasks)
+        html_code += "<ul>"
+        for task in session['tasks'].split(":"):
+            html_code += "<li>%s</li>" % (task)
+        html_code += "</ul>"
+
+    return html_code
 
 
 @app.route("/form_handler", methods=["POST"])

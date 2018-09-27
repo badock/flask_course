@@ -9,6 +9,7 @@
             crossorigin="anonymous"></script>
 
     <link rel=stylesheet href="css/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css">
     <!--<link rel=stylesheet href="http://codemirror.net/doc/docs.css">-->
     <script src="js/codemirror.js"></script>
     <script src="js/xml.js"></script>
@@ -42,6 +43,8 @@
                 which is
                 later sent to the user.</p>
 
+            <img style="max-width: 100%;" src="assets/chapter1/chapter1_flask_disptach.png"/>
+
             <p>We will now create a first Flask application. The first step is to import Flask and to create a Flask
                 application:
                 create a <span class="badge badge-primary">main.py</span> file and add the following lines:</p>
@@ -65,7 +68,7 @@ if __name__ == "__main__":
                 land on an error page as in the following screenshot:</p>
             <img style="height: 400px;" src="assets/chapter1/chapter1_notfound.png"/>
 
-            <p>This error message is completely normal, as the web application does not contain yet any view!</p>
+            <p>As the web application does not contain yet any view, <b>this error message is completely normal!</b></p>
             <p>In the next Section, you will learn how to develop a view.</p>
 
 
@@ -163,7 +166,23 @@ def fail_divide_zero():
             <p>In the previous screenshot, the value of variable <i>j</i> have been checked, proving that it was the
                 real cause of the error.</p>
 
-            <h3>V- Summary</h3>
+            <h3>V- Excercice</h3>
+
+            <p>Write a view that display to the user the Greater Common Divisor of two numbers (i.e. <i>PGCD</i>) a and b. For the sake of simplicity, we can consider that a > b.</p>
+            <p>A user may enter the following url <a href="http://127.0.0.1:8080/compute_pgcd/56/64">http://127.0.0.1:8080/compute_pgcd/31/15</a> and get <i>PGCD</i>).</p>
+            <p>As a reminder, the GCD can be computed via the following algorithm:</p>
+
+            <textarea class=code_no_line_numbers>
+def gcd(a, b):
+    while b > 0:
+        r = a % b
+        a = b
+        b = r
+    return a</textarea>
+
+            <p><i>Bonus:</i> rewrite the function in a recursive way using the <a href="http://flask.pocoo.org/docs/1.0/api/#flask.redirect">flask.redirect</a> feature.</p>
+
+            <h3>VI- Summary</h3>
             <p>The following code summarizes what has been shown in this chapter:</p>
             <textarea class=code>
 from flask import Flask
@@ -203,7 +222,8 @@ if __name__ == "__main__":
                     lineNumbers: true,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -215,7 +235,8 @@ if __name__ == "__main__":
                     lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 

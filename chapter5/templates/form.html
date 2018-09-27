@@ -12,10 +12,12 @@
         <div class="col-md-6 main-div">
             <div class="card">
                 <div class="card-header text-center">
-                    <h1>Todos</h1>
+                    <h1>{{ task_list.name }}</h1>
                     <form action="{{ url_for('form_handler') }}" method="post">
                         <div class="form-group">
                             <input class="form-control" name="task_text" type="text" placeholder="Add todo"/>
+                            <input type="hidden" name="task_list_id" value="{{ task_list.id }}"/>
+                            <input type="hidden" name="task_list_name" value="{{ task_list.name }}"/>
                         </div>
                         <div class="form-group">
                             <input class="btn btn-success float-right" type="submit"/>
@@ -24,8 +26,8 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for task in tasks %}
-                        <li class="list-group-item">{{ task }} <a class="float-right" href="#">delete</a></li>
+                        {% for task in task_list.tasks %}
+                        <li class="list-group-item">{{ task.label }} <a class="float-right" href="#">delete</a></li>
                         {% endfor %}
                     </ul>
                 </div>

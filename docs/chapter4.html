@@ -10,6 +10,7 @@
             crossorigin="anonymous"></script>
 
     <link rel=stylesheet href="css/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css">
     <!--<link rel=stylesheet href="http://codemirror.net/doc/docs.css">-->
     <script src="js/codemirror.js"></script>
     <script src="js/xml.js"></script>
@@ -29,257 +30,175 @@
         </div>
         <div class="col-10 main-content">
 
-            <h1>Chapter 4 - Using a database with Flask </h1>
-            <h4>Configuring a database, introduction to model classes, querying objects from the database and
-                setting up relationships between model classes.</h4>
+            <h1>Chapter 4 - Templates and assets files (CSS and Javascript)</h1>
+            <h4><i>Creating Web templates, adding assets to the application, and prettify the application using <a
+                    href="http://getbootstrap.com/">Bootstrap.</a></i></h4>
 
-            <h3>I- Configuring a database</h3>
-            <p>Object oriented programming and relational database view data in different ways. An ORM (<a
-                    href="https://en.wikipedia.org/wiki/Object-relational_mapping">Object Relational Mapping</a>) is a
-                mechanism
-                that makes the link between the object oriented and the relational database approaches. When using an
-                ORM, model
-                classes are defined for, usually, mapping each of the relational tables.</p>
+            <h3>I- Templates</h3>
+            <h4>A- Quick introduction to Jinja templates</h4>
 
-            <p>This chapter will cover how to integrate Flask with <a href="https://www.sqlalchemy.org/">SQLAlchemy</a>,
-                the most famous python ORM. Before proceeding, install the SQLAlchemy plugin for Flask, by creating a <span class="badge badge-primary">requirements.txt</span> file and adding the following lines:</p>
-            <textarea class="code_no_line_numbers">Flask==0.10
-Flask-SQLAlchemy==2.1
-pysqlite</textarea>
-            <br/>
+            <p>A <a href="https://en.wikipedia.org/wiki/Web_template_system">template</a> is a file that can be used as
+                a basis to
+                generate files such as configuration files or source code files.</p>
 
-            <div class="alert alert-danger" role="alert">
-                <p><strong>Warning!</strong> You may encounter an error while installing pysqlite (<i>ImportError: No module named pysqlite2</i>).</p>
+            <p>Flask uses <a href="http://jinja.pocoo.org/">Jinja2</a> as a template engine. The following code
+                illustrates how to
+                generate an HTML file (similar to what we did in chapter2) thanks to Jinja2:</p>
 
-                <p>In this case, you need to install the sqlite package on your workspace. Open an Unix terminal, as in this screenshot:
-                    <br/>
-                    <img height="150px" src="assets/chapter4/chapter4_open_terminal.png"/>
-                    <br/>
-                    <br/>
+            <textarea class="jinja2_code_no_line_numbers">
+<html>
+    <head>
+        <title>Todolist</title>
+    </head>
+    <body>
+        <form action="{{ url_for('form_handler') }}" method="post">
+            <input name="task_text" type="text" placeholder="enter what you want to do"/>
+            <input type="submit"/>
+        </form>
 
-                    and enter the following command:
-                    <textarea class="code_no_line_numbers">sudo apt-get install -y libsqlite3-dev</textarea>
-                    <br/>
-
-                    as in the following screenshot:
-                    <br/>
-                    <img height="100px" src="assets/chapter4/chapter4_run_command.png"/>
-            </div>
-
-
-            <p>Now, create a <span class="badge badge-primary">database.py</span> script that will contain the database
-                configuration and model classes' definitions:</p>
-
-            <textarea class="code_no_line_numbers">
-from flask_sqlalchemy import SQLAlchemy
-from main import app
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
+        <ul>
+        {% for task in tasks %}
+            <li>{{ task }}</li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>
 </textarea>
 
-            <p>Now, modify the existing <span class="badge badge-primary">main.py</span> so that it creates the
-                database at
-                startup:</p>
-
-            <textarea class=code_no_line_numbers>
-if __name__ == "__main__":
-    # Create the DB
-    from database import db
-    print("creating database")
-    db.create_all()
-    print("database created")
+            <p>Jinja2 proposes two mechanisms to help developers to generate documents:
+                <ul>
+                    <li><a href="http://jinja.pocoo.org/docs/2.9/templates/#list-of-control-structures">Expressions</a>
+                        <textarea class="jinja2_code_no_line_numbers">
+    abc{{ "def" }}ghij
+    {{ task }}
+    {{ user.name }}
 </textarea>
-
-            <h3>II- Introduction to model classes</h3>
-            <p>In the ORM model, model classes are usually an object oriented equivalent to a relational table. In this
-                section, we
-                will modelize the following class:</p>
-            <img style="height: 200px;" src="assets/chapter4/chapter4_umlSingleClass.png"/>
-
-            <p>To get started with model classes, open the <span class="badge badge-primary">database.py</span> file and
-                add the
-                following definition of a task:</p>
-
-            <textarea class="code_no_line_numbers">
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.Text)
-    isDone = db.Column(db.Boolean)
+                    </li>
+                    <li><a href="http://jinja.pocoo.org/docs/2.9/templates/#expressions">Statements</a>
+                        <ul>
+                            <li>
+            <p><a href="http://jinja.pocoo.org/docs/2.9/templates/#if">If</a></p>
+            <textarea class="jinja2_code_no_line_numbers">
+{% if user.connected %}
+    User is connected
+{% endif %}
 </textarea>
-
-            <p>Now, restart the script and modify the code of <span class="badge badge-primary">main.py</span> to make
-                it store
-                data in database instead of using sessions:</p>
-            <textarea class="code_no_line_numbers">
-@app.route("/")
-def generate_form():
-    from database import Task
-    tasks = Task.query.all() # Get all the tasks stored in database
-    return render_template("form.html", tasks=tasks)
-
-
-@app.route("/form_handler", methods=["POST"])
-def form_handler():
-    from database import Task
-    task_text = request.form["task_text"]
-
-    new_task = Task() # Create a new task locally
-    new_task.label = task_text # set the text of the task
-    new_task.isDone = False # set the isDone boolean
-
-    # Add the new task to the current DB session.
-    # Once the execution of the DB session is over,
-    # the new task will be present in the database.
-    db.session.add(new_task)
-    return redirect(url_for("generate_form"))
-</textarea>
-
-            <p>And update the <span class="badge badge-primary">templates/form.html</span> template, to take into
-                account the new
-                data modelization of tasks:</p>
-
-            <textarea class=jinja2_code_no_line_numbers>
-{% for task in tasks %}
-<li class="list-group-item">{{ task.label }} <a class="float-right" href="#">delete</a></li>
+            </li>
+            <li><p><a href="http://jinja.pocoo.org/docs/2.9/templates/#for">For</a></p>
+                <textarea class="jinja2_code_no_line_numbers">
+{% for user in users %}
+    a user
 {% endfor %}
 </textarea>
+            </li>
+            </ul></li>
+            </ul>
+            </p>
 
-            <h3>III- Querying database objects</h3>
+            <h4>B- Using templates</h4>
 
-            <p>It is possible to read, update and delete objects from database directly from a model class. The
-                following piece of
-                code illustrates few examples of database querying using Flask (more details <a
-                        href="http://flask-sqlalchemy.pocoo.org/2.1/queries/">here</a>):</p>
+            <p>Create a <span class="badge badge-primary">templates</span> folder: it will contain all the templates of
+                the
+                application. Copy the template from Section I-A in <span class="badge badge-primary">templates</span>.
+            </p>
+
+            <p>Let's now generate a view that will use this template. To do so, replace the <i>generate_form</i>
+                function (from
+                chapter 2) by the following code:</p>
+
             <textarea class=code_no_line_numbers>
-from database import Task
-
-Task.query.all() # gets a list containing all the tasks from database. If database is empty, returns []
-Task.query.first() # returns an task from database. If database is empty, returns None
-
-Task.query.filter(Task.id == 1).first() # returns the task whose ID value is equal to 1. If there is no result, returns none
-Task.query.filter_by(id=1).first() # same as previous query
-
-Task.query.filter_by(isDone=False).all() # returns all the tasks that are not done. If no result, returns []
-</textarea>
-
-
-            <h3>IV- Relationships</h3>
-
-            <p>It is possible setup links between model classes, by using the <b>relationship</b> concept. In this
-                section, we will
-                modelize the following relationship:</p>
-            <img style="height: 200px;" src="assets/chapter4/chapter4_umlRelationship.png"/>
-
-            <p>Let's add a new model class in our web application: to do so, apply the following modifications to <span
-                    class="badge badge-primary">database.py</span>:</p>
-            <textarea class=code_no_line_numbers>
-class TaskList(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    owner = db.Column(db.Text)
-    tasks = db.relationship('Task', backref='task_list', lazy='dynamic')
-
-
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.Text)
-    isDone = db.Column(db.Boolean)
-    task_list_id = db.Column(db.Integer, db.ForeignKey('task_list.id'))
-</textarea>
-
-            <h3>V- Towards a complete task manager</h3>
-            <p>In this section, we will complete the existing application so that it can handle several task list.
-                Please take a
-                look a the modifications we made to the existing code.</p>
-
-            <p><span class="badge badge-primary">database.py</span>:</p>
-            <textarea class=code>
-from flask_sqlalchemy import SQLAlchemy
-from main import app
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
-
-class TaskList(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    tasks = db.relationship('Task', backref='task_list', lazy='dynamic')
-
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.Text)
-    isDone = db.Column(db.Boolean)
-    task_list_id = db.Column(db.Integer, db.ForeignKey('task_list.id'))
-</textarea>
-            <p></p>
-
-            <p><span class="badge badge-primary">main.py</span>:</p>
-            <textarea class=code>
-from flask import Flask
 from flask import request, url_for, redirect, session, render_template
-app = Flask("firstFormApplication")
-app.secret_key = "very_important_secret"
-
 
 @app.route("/")
-@app.route("/<task_list_name>")
-def generate_form(task_list_name=None):
-    from database import Task, TaskList
-    # If no "task_list_name" parameter is provided, redirect to "default"
-    if task_list_name is None:
-        return redirect(url_for("generate_form", task_list_name="default"))
-    existing_task_list = TaskList.query.filter_by(name=task_list_name).first()
-    # If no existing task list, then create a new one
-    if existing_task_list is None:
-        new_task_list = TaskList()
-        new_task_list.name = task_list_name
-        db.session.add(new_task_list)
-        db.session.commit()
-        existing_task_list = new_task_list
-    # Render the form usign the current task list
-    return render_template("form.html", task_list=existing_task_list)
-
-
-@app.route("/form_handler", methods=["POST"])
-def form_handler():
-    from database import Task
-    task_list_id = request.form["task_list_id"]
-    task_list_name = request.form["task_list_name"]
-    task_text = request.form["task_text"]
-
-    # Create a new task
-    new_task = Task()
-    new_task.label = task_text
-    new_task.isDone = False
-    new_task.task_list_id = task_list_id # Make the link between Task and TaskList
-
-    db.session.add(new_task)
-    db.session.commit()
-
-    return redirect(url_for("generate_form", task_list_name=task_list_name))
-
-if __name__ == "__main__":
-    # Create the DB
-    from database import db
-    print("creating database")
-    db.create_all()
-    print("database created")
-    app.jinja_env.auto_reload = True
-    app.run(host="0.0.0.0", port=8080, debug=True)
-
+def generate_form():
+    tasks = []
+    if "tasks" in session:
+        tasks = session["tasks"].split(":")
+    return render_template("form.html", tasks=tasks)
 </textarea>
-            <p></p>
 
-            <p><span class="badge badge-primary">templates/form.html</span>:</p>
-            <textarea class=jinja2_code>
+            <h3>II- Adding assets to the application</h3>
+
+            <p>Assets files are files that are used by the browser in addition to the HTML code that is interpreted by a
+                web
+                browser. They can be images, CSS stylesheets or Javascript files.</p>
+
+            <p>In Flask, they are stored in the <b>static</b> folder. Create a <span
+                    class="badge badge-primary">static</span>
+                folder in your project, and then add three folders in the static folder:
+            <ul>
+                <li><span class="badge badge-primary">css</span></li>
+                <li><span class="badge badge-primary">js</span></li>
+                <li><span class="badge badge-primary">img</span></li>
+            </ul>
+            </p>
+
+            <p>We will add a first asset to the web application: create a <span
+                    class="badge badge-primary">theme.css</span> file in
+                the <span class="badge badge-primary">static</span> and fill it with the following code:</p>
+            <textarea class=css_code_no_line_numbers>
+body {
+    padding: 15px;
+    background-color: #EEEEEE;
+}
+
+.main-div {
+    margin: auto;
+}
+
+.delete-link {
+    floating: right;
+}
+</textarea>
+
+            <div class="alert alert-warning" role="alert">
+                <p><strong>Warning!</strong> If you want to learn more about CSS, you can take a look at this tutorial:
+                    <a
+                            href="http://learnlayout.com/"/>learnlayout.com</a></p>
+            </div>
+
+            <p>Then, in the <span class="badge badge-primary">templates/form.html</span> template, add the line in the
+                HTML header:
+            </p>
+            <textarea class=jinja2_code_no_line_numbers>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" type="text/css"/>
+</textarea>
+
+            <h3>III- Using the Bootstrap CSS framework</h3>
+
+            <p><a href="https://getbootstrap.com/">Bootstrap</a> is a convenient CSS framework that proposes some CSS
+                styling, which
+                enables an easier development of nice a web site.</p>
+
+    <p>To use Bootstrap, you have to add a css file and js file to the existing project.</p>
+    <!--<p>To proceed, go to <a
+                    href="https://getbootstrap.com/docs/4.0/getting-started/download/">https://getbootstrap.com/docs/4.0/getting-started/download/</a>,
+                and Download the <b><i>Compiled</i> CSS and JS</b> version of bootstrap. Extract the archive, and do the
+                following:
+            <ul>
+                <li>Copy <span class="badge badge-primary">css/bootstrap.css</span> into <span
+                        class="badge badge-primary">assets/css/bootstrap.css</span>
+                </li>
+                <li>Copy <span class="badge badge-primary">css/bootstrap.js</span> into <span
+                        class="badge badge-primary">assets/js/bootstrap.js</span>
+                </li>
+            </ul>
+            </p>
+-->
+
+            <p>Now modify the HTML template to make it look like this:</p>
+            <textarea class=html_code_no_line_numbers>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Todolist</title>
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>    
+    <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+
 </head>
 <body>
 <div id="container">
@@ -287,12 +206,10 @@ if __name__ == "__main__":
         <div class="col-md-6 main-div">
             <div class="card">
                 <div class="card-header text-center">
-                    <h1>{{ task_list.name }}</h1>
+                    <h1>Todos</h1>
                     <form action="{{ url_for('form_handler') }}" method="post">
                         <div class="form-group">
                             <input class="form-control" name="task_text" type="text" placeholder="Add todo"/>
-                            <input type="hidden" name="task_list_id" value="{{ task_list.id }}"/>
-                            <input type="hidden" name="task_list_name" value="{{ task_list.name }}"/>
                         </div>
                         <div class="form-group">
                             <input class="btn btn-success float-right" type="submit"/>
@@ -301,8 +218,8 @@ if __name__ == "__main__":
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        {% for task in task_list.tasks %}
-                        <li class="list-group-item">{{ task.label }} <a class="float-right" href="#">delete</a></li>
+                        {% for task in tasks %}
+                        <li class="list-group-item">{{ task }} <a class="float-right" href="#">delete</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -313,6 +230,9 @@ if __name__ == "__main__":
 </body>
 </html>
 </textarea>
+
+            <p>The application should be close to what is depicted in the following screenshot:</p>
+            <img style="height: 400px;" src="assets/chapter4/chapter3_bootstrap.png"/>
 
         </div>
         <div class="col">
@@ -329,7 +249,8 @@ if __name__ == "__main__":
                     lineNumbers: true,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -341,7 +262,8 @@ if __name__ == "__main__":
                     lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -352,7 +274,8 @@ if __name__ == "__main__":
                     lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -360,10 +283,11 @@ if __name__ == "__main__":
                 var editor = CodeMirror.fromTextArea(code_tag, {
                     mode: {name: "jinja2",
                            vhtmlMode: true},
-                    lineNumbers: true,
+                    lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -374,7 +298,8 @@ if __name__ == "__main__":
                     lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -382,10 +307,11 @@ if __name__ == "__main__":
                 var editor = CodeMirror.fromTextArea(code_tag, {
                     mode: {name: "jinja2",
                            vhtmlMode: true},
-                    lineNumbers: true,
+                    lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
@@ -395,19 +321,24 @@ if __name__ == "__main__":
                     lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
 
             $.map( $(".html_code"), function(code_tag) {
                 var editor = CodeMirror.fromTextArea(code_tag, {
                     mode: {name: "htmlmixed"},
-                    lineNumbers: true,
+                    lineNumbers: false,
                     indentUnit: 4,
                     matchBrackets: true,
-                    readOnly: true
+                    readOnly: true,
+                    theme: "dracula"
                 });
             });
+
+
+
 
 </script>
 </body>

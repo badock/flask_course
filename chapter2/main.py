@@ -1,34 +1,15 @@
 from flask import Flask
-from flask import request, url_for, redirect, session
+from flask import request, url_for, redirect, session, render_template
+
 app = Flask("firstFormApplication")
 app.secret_key = "very_important_secret"
 
 
-@app.route("/")
-def generate_form():
+@app.route("/employees")
+def display_employees():
+    employees = ["John", "Bob", "Henry", "Alice", "Alan"]
+    return render_template("employees.html", employees=employees)
 
-    html_code = """<form action="%s" method="post">
-        <input name="task_text" type="text" placeholder="enter what you want to do"/>
-        <input type="submit"/>
-    </form>""" % (url_for("form_handler"))
-
-    if "tasks" in session:
-        html_code += "<ul>"
-        for task in session['tasks'].split(":"):
-            html_code += "<li>%s</li>" % (task)
-        html_code += "</ul>"
-
-    return html_code
-
-
-@app.route("/form_handler", methods=["POST"])
-def form_handler():
-    task_text = request.form["task_text"]
-    if "tasks" not in session:
-        session["tasks"] = task_text
-    else:
-        session["tasks"] = task_text+":"+session['tasks']
-    return redirect(url_for("generate_form"))
 
 if __name__ == "__main__":
     app.jinja_env.auto_reload = True
