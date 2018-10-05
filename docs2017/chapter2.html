@@ -1,0 +1,251 @@
+<html>
+<head>
+    <meta charset="ISO-8859-1">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+          crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+
+    <link rel=stylesheet href="css/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css">
+    <!--<link rel=stylesheet href="http://codemirror.net/doc/docs.css">-->
+    <script src="js/codemirror.js"></script>
+    <script src="js/xml.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/css.js"></script>
+    <script src="js/python.js"></script>
+    <script src="js/htmlmixed.js"></script>
+    <script src="js/matchbrackets.js"></script>
+    <script src="js/jinja2.js"></script>
+
+    <link rel="stylesheet" href="css/course.css">
+</head>
+<body>
+<div id="container">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-10 main-content">
+
+            <h1>Chapter 2 - Templates</h1>
+            <h4><i>Creating Web templates.</i></h4>
+
+            <h3>I- Templates</h3>
+
+            <p>A <a href="https://en.wikipedia.org/wiki/Web_template_system">template</a> is a file that can be used as
+                a basis to
+                generate files such as configuration files or source code files.</p>
+
+            <p>Flask uses <a href="http://jinja.pocoo.org/">Jinja2</a> as a template engine. The following code
+                is an example of a Jinja2 template:</p>
+
+            <textarea class="jinja2_code_no_line_numbers">
+<ul>
+{% for e in employees %}
+    <li>{{ e }}</li>
+{% endfor %}
+</ul></textarea>
+
+            <p>Jinja2 proposes two mechanisms to help developers to generate documents:</p>
+
+            <h4>A- Expressions</h4>
+            <p><a href="http://jinja.pocoo.org/docs/2.9/templates/#expressions">Expressions</a> are surrounded by <b>{{  }}</b> and are evaluated by Jinja. The expression is then replaced by its evaluation.</p>
+            <p>The following snippet show few example of expressions:</p>
+
+                        <textarea class="jinja2_code_no_line_numbers">
+    abc{{ "def" }}ghij
+    {{ employee }}
+    {{ employee.name }}</textarea>
+        <p></p>
+
+
+            <h4>B- Statements</h4>
+            <p><a href="http://jinja.pocoo.org/docs/2.9/templates/#list-of-control-structures">Statements</a> enables to control the way Jinja generates the response, such as with: </p>
+                        <ul>
+                            <li>
+            <p><a href="http://jinja.pocoo.org/docs/2.9/templates/#if">If</a> conditional statements</p>
+            <textarea class="jinja2_code_no_line_numbers">
+{% if user.connected %}
+    User is connected
+{% endif %}
+</textarea>
+            </li>
+            <li><p><a href="http://jinja.pocoo.org/docs/2.9/templates/#for">For</a> control loop</p>
+                <textarea class="jinja2_code_no_line_numbers">
+{% for user in users %}
+    a user
+{% endfor %}
+</textarea>
+            </li>
+            </ul></li>
+            </ul>
+            </p>
+
+            <h4>B- Using templates</h4>
+
+            <p>Create a <span class="badge badge-primary">templates</span> folder: it will contain all the templates of
+                the
+                application. Copy the template from Section I-A in <span class="badge badge-primary">templates/employees.html</span>.
+            </p>
+
+            <p>Let's now generate a view that uses this template. To do so, implement a view as in the following snippet:</p>
+
+            <textarea class=code_no_line_numbers>
+from flask import request, url_for, redirect, session, render_template
+
+@app.route("/employees")
+def display_employees():
+    employees = ["John", "Bob", "Henry", "Alice", "Alan"]
+    return render_template("employees.html", employees=employees)
+</textarea>
+
+        <br/>
+
+            <h4>C- Reusing code from other templates</h4>
+
+            <p>In the <span class="badge badge-primary">templates</span> folder, create a <span class="badge badge-primary">templates/layout.html</span> with the following code:.
+            </p>
+
+            <p>Let's now generate a view that will use this template. To do so, implement a view as in the following snippet:</p>
+
+            <textarea class="jinja2_code_no_line_numbers">
+Title:
+{% block block_title %}
+{% endblock %}
+
+<br/>
+
+Body:
+{% block body %}
+{% endblock %}</textarea>
+
+        <p>Now, modify the <span class="badge badge-primary">templates/employees.html</span>, according to the following snippet:</p>
+        <textarea class="jinja2_code_no_line_numbers">
+{% extends "layout.html" %}
+
+{% block block_title %}
+    List of employees
+{% endblock %}
+
+{% block body %}
+{% for e in employees %}
+    <li>{{ e }}</li>
+{% endfor %}
+{% endblock %}</textarea>
+
+        <p>You should get the following result:</p>
+        <img style="max-width: 100%;" src="assets/chapter2/chapter2_template_extension.png"/>
+
+
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+<script>
+
+            $.map( $(".code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "python",
+                           version: 3,
+                           singleLineStringErrors: false},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "python",
+                           version: 3,
+                           singleLineStringErrors: false},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".jinja2_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".jinja2_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".css_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "css",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".css_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".html_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "htmlmixed"},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".html_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "htmlmixed"},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+
+
+
+</script>
+</body>
+</html>

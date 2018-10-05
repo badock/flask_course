@@ -1,0 +1,348 @@
+<html>
+<head>
+    <meta charset="ISO-8859-1">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+          crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+
+    <link rel=stylesheet href="css/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/dracula.css">
+    <!--<link rel=stylesheet href="http://codemirror.net/doc/docs.css">-->
+    <script src="js/codemirror.js"></script>
+    <script src="js/xml.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/css.js"></script>
+    <script src="js/python.js"></script>
+    <script src="js/htmlmixed.js"></script>
+    <script src="js/matchbrackets.js"></script>
+    <script src="js/jinja2.js"></script>
+
+    <link rel="stylesheet" href="css/course.css">
+</head>
+<body>
+<div id="container">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-10 main-content">
+
+            <h1>Chapter 6 - Dynamic webpages using Ajax</h1>
+            <h4>Serving JSON objects, Querying web services asynchronously, Dynamic web pages.</h4>
+
+            <h3>I- Serving JSON objects</h3>
+            <p>JSON is a text format that enables to represent structured data. A JSON object looks like the following:</p>
+
+            <textarea class="code_no_line_numbers">
+{
+	"configuration": {
+		"name": "configuration1",
+		"nodes": [{
+			"node_name": "computer1",
+			"roles": ["control"]
+		}, {
+			"node_name": "computer2",
+			"role_name": ["compute", "network"]
+		}]
+	}
+}</textarea>
+            <br/>
+
+            <p>In order to support JSON in a python script, import the following library:</p>
+
+            <textarea class="code_no_line_numbers">
+import json</textarea>
+
+            <p>You can then use the following methods:</p>
+
+            <textarea class="code_no_line_numbers">
+json_str = json.dumps({"name": "henry", "lastname": "Jones", "age": 35})
+python_dict = json.loads('{"json_property": "str_value", "json_property2": 3}')
+</textarea>
+
+            <p>Now, modify the existing <span class="badge badge-primary">main.py</span> so that it creates the
+                database at
+                startup:</p>
+
+            <textarea class=code_no_line_numbers>
+if __name__ == "__main__":
+    # Create the DB
+    from database import db
+    print("creating database")
+    db.create_all()
+    print("database created")
+</textarea>
+
+            <h3>II- Serving JSON objects</h3>
+        <p>In this Section we will implement an new Flask application containing two python functions:
+        <ul>
+            <li>one function is in charge of incrementing a counter</li>
+            <li>one function is in charge of serving the value of the counter</li>
+        </ul>
+        </p>
+
+            <p>The following snippet implements those two functions:</p>
+
+            <textarea class="code_no_line_numbers">
+from flask import Flask
+from flask import request, url_for, redirect, session, render_template
+import json
+app = Flask("firstFormApplication")
+app.secret_key = "very_important_secret"
+
+COUNTER = 0
+
+@app.route("/increment_counter")
+def increment_counter():
+    global COUNTER
+    COUNTER += 1
+    return json.dumps({
+        "status": "OK"
+    })
+
+@app.route("/fetch_counter")
+def fetch_counter():
+    global COUNTER
+    return json.dumps({
+        "counter": COUNTER
+    })
+
+if __name__ == "__main__":
+    app.jinja_env.auto_reload = True
+    app.run(host="0.0.0.0", port=8080, debug=True)
+</textarea>
+
+            <p>Browsing 5 times on the <b>/increment_counter</b> URL and one time on <b>/fetch_counter</b> URL should result in the following screenshots</p>
+
+            <img style="height: 200px;" src="assets/chapter6/increment_screen.png"/>
+            <img style="height: 200px;" src="assets/chapter6/fetch_screen.png"/>
+
+            <h3>III- A quick introduction to asynchronous web pages</h3>
+
+            <p>Until now we developped static web pages : each time a client was requesting a web page, the server was producing a new HTML document. By using <a href="https://en.wikipedia.org/wiki/Ajax_(programming)">Ajax</a> (Asynchronous JavaScript and XML), it possible to create dynamic web pages that will continuously get data from server, and self update.</p>
+
+            <p>By using the jQuery javascript framework, it is possible to request the server via some javascript code:</p>
+            <textarea class=code_no_line_numbers>
+$.ajax({
+    url: "/fetch_counter",
+    dataType: "json",
+    success: function(response) {
+        // do something with the server's response
+    }
+})
+</textarea>
+
+
+            <h3>IV- Developping a first dynamic page</h3>
+
+            <p>In this section we will develop a first complete dynamic web application that enables to asynchronously increment a counter by clicking on button.</p>
+
+            <p><span class="badge badge-primary">main.py</span>:</p>
+            <textarea class=code_no_line_numbers>
+from flask import Flask
+from flask import request, url_for, redirect, session, render_template
+import json
+app = Flask("firstFormApplication")
+app.secret_key = "very_important_secret"
+
+COUNTER = 0
+
+@app.route("/")
+def index():
+    return render_template("home.html")
+
+@app.route("/increment_counter")
+def increment_counter():
+    global COUNTER
+    COUNTER += 1
+    return json.dumps({
+        "status": "OK"
+    })
+
+@app.route("/fetch_counter")
+def fetch_counter():
+    global COUNTER
+    return json.dumps({
+        "counter": COUNTER
+    })
+
+if __name__ == "__main__":
+    app.jinja_env.auto_reload = True
+    app.run(host="0.0.0.0", port=8080, debug=True)
+
+</textarea>
+
+            <p><span class="badge badge-primary">templates/home.html</span>:</p>
+            <textarea class=code>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todolist</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        function increment_counter() {
+            $.ajax({
+                url: "/increment_counter",
+                dataType: "json",
+                success: function(response) {
+                    console.log("counter has been successfully incremented");
+                }
+            })
+        }
+
+        function fetch_and_update_counter() {
+            $.ajax({
+                url: "/fetch_counter",
+                dataType: "json",
+                success: function(response) {
+                    document.getElementById("counter-box").innerHTML = response["counter"];
+                }
+            })
+        }
+
+        setInterval(function(){
+            fetch_and_update_counter();
+        }, 2000)
+    </script>
+</head>
+<body>
+    <div id="counter-box">loading counter...</div>
+    <button onclick="increment_counter();">increment counter</button>
+</body>
+</html>
+</textarea>
+            <p></p>
+
+
+
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+<script>
+
+            $.map( $(".code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "python",
+                           version: 3,
+                           singleLineStringErrors: false},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "python",
+                           version: 3,
+                           singleLineStringErrors: false},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".jinja2_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".jinja2_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".css_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "css",
+                           vhtmlMode: true},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".css_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "jinja2",
+                           vhtmlMode: true},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".html_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "htmlmixed"},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".html_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "htmlmixed"},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".js_code_no_line_numbers"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "javascript"},
+                    lineNumbers: false,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+            $.map( $(".js_code"), function(code_tag) {
+                var editor = CodeMirror.fromTextArea(code_tag, {
+                    mode: {name: "javascript"},
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    matchBrackets: true,
+                    readOnly: true,
+                    theme: "dracula"
+                });
+            });
+
+</script>
+</body>
+</html>

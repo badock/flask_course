@@ -1,0 +1,246 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+
+    <link rel=stylesheet href="css/codemirror.css">
+    <!--<link rel=stylesheet href="http://codemirror.net/doc/docs.css">-->
+    <script src="js/codemirror.js"></script>
+    <script src="js/xml.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/yaml.js"></script>
+    <script src="js/css.js"></script>
+    <script src="js/python.js"></script>
+    <script src="js/htmlmixed.js"></script>
+    <script src="js/matchbrackets.js"></script>
+
+    <link rel="stylesheet" href="css/course.css">
+</head>
+<body>
+
+<div id="container">
+
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-10 main-content">
+
+            <h1>Conception d'un système d'information pour gérer des configurations Enos</h1>
+            <h5><i>(ou : "comment j'ai appris à ne plus m'en faire et à aimer générer des documents Yaml" <a href="https://fr.wikipedia.org/wiki/Docteur_Folamour"><sup>[ref]</sup></a>).</i></h5>
+
+            <h3>I- Contexte</h3>
+
+            <p><a href="https://github.com/BeyondTheClouds/enos">Enos</a> est un outil permettant de déployer des infrastructures de <a href="https://fr.wikipedia.org/wiki/Cloud_computing">Cloud Computing</a> à partir d'un fichier <a href="https://fr.wikipedia.org/wiki/YAML">Yaml</a>.</p>
+
+            <p>Dans ce projet, nous vous demandons de développer un système d'information qui permet la gestion de configurations Enos.</p>
+
+            <p>Il devra permettre à l'utilisateur de créer, modifier, supprimer et eventuellement partager des configurations Enos.</p>
+
+            <p>En ce qui concerne les configurations Enos, on peut les considérer comme un document Yaml. Un exemple complet ressemble à cela:</p>
+
+            <textarea class="code">
+---
+# ############################################### #
+# Static provider parameter (mutable)             #
+# ############################################### #
+provider:
+  type: static
+  networks:
+    - cidr: 11.8.0.0/24
+      start: 11.8.0.20
+      end:  11.8.0.200
+      gateway: 11.8.0.1
+      dns: 8.8.8.8
+    - cidr: 11.8.1.0/24
+      start: 11.8.1.50
+      end:  11.8.1.200
+      gateway: 11.8.1.1
+      dns: 8.8.8.8
+  eths:
+    - eth0
+    - eth1
+
+resources:
+  control:
+    address: computer-1
+    user: root
+  network:
+    address: computer-2
+    user: root
+  compute:
+    - address: computer-3
+      user: root
+    - address: computer-4
+      user: root
+
+# ############################################### #
+# Inventory to use (immutable)                    #
+# ############################################### #
+
+# This will describe the topology of your services
+inventory: inventories/inventory.sample
+
+# ############################################### #
+# docker registry parameters (immutable)          #
+# ############################################### #
+registry:
+  type: internal
+
+# ############################################### #
+# Enos Customizations (immutable)                 #
+# ############################################### #
+enable_monitoring: no
+
+
+# ############################################### #
+# Kolla parameters (immutable)                    #
+# ############################################### #
+# Repository
+kolla_repo: "https://git.openstack.org/openstack/kolla-ansible"
+kolla_ref: "stable/ocata"
+
+# Vars : globals.yml
+kolla:
+  kolla_base_distro: ubuntu
+  kolla_install_type: source
+  docker_namespace: beyondtheclouds
+  enable_heat: no
+            </textarea>
+
+            <p>Une grande partie de la configuration est immutable (ce qui est entre les lignes 35 à 66 ne change pas), tandis qu'une légère partie est mutable (ce qui est entre les lignes 5 et 33 change souvent) en fonction de la taille de l'infrastructure à déployer.</p>
+
+            <p>Dans l'exemple ci-dessus, nous déclarons une infrastructure de Cloud Computing qui contient 4 ordinateurs (computer-1, computer-2, computer-3, computer-4). Nous déclarons que computer-1 aura un rôle de contrôleur (<i>control</i>), que computer-2 pilotera le réseau (<i>network</i>) et que computer-3 et computer-4 serviront de noeuds de calcul (<i>compute</i>). Nous spécifions pour chacun des noeuds un utilisateur à utiliser pour s'y connecter.</p>
+
+            <p>Enfin nous déclarons une configuration réseau : celle-ci est composée de deux réseaux (11.8.0.* et 11.8.1.*). Pour chaque réseau, nous déclarons les paramètres suivants : cidr, start, end, gateway, dns.</p>
+
+            <p>La structure de la partie mutable est toujours déclarée de la manière suivante:</p>
+            <textarea class="code_no_line_numbers">
+provider:
+  type: static
+  networks:
+  %pour chaque reseau dans la liste des reseaux%
+    {description du reseau}
+  %fin%
+  eths:
+    - eth0
+    - eth1
+
+resources:
+%pour chaque rôle dans la liste des rôles%
+  {nom du rôle}:
+  %pour chaque ordinateur ayant ce rôle%
+    {description de l'ordinateur}
+  %fin%
+%fin%
+            </textarea>
+
+            <h3> II- Objectif </h3>
+
+            <p>Le système que vous allez développer devra permettre à l'utilisateur de configurer la partie mutable d'une configuration Enos : celui-ci pourra spécifier les ressources qu'il veut configurer, ainsi que les paramètres réseau de son infrastructure. Au final, votre système devra générer un fichier Yaml qui ressemble à celui présenté au début du présent document.</p>
+
+            <h3> III- Cahier des charges </h3>
+
+            <p>Le cahier des charges est relativement simple. Il s'agit de pouvoir créer des nouvelles configurations en demandant à l'utilisateur de fournir la partie mutable de la configuration et de sauvegarder ce qu'il a spécifié. L'utilisateur pourra ensuite télécharger la configuration qui contiendra alors la partie mutable (qu'il a spécifiée), ainsi que la partie immutable (qui aura été ajoutée en se basant sur une template), retrouvant ainsi le fichier yaml nécessaire au démarrage de l'outil Enos.</p>
+
+
+            <p>Nous vous conseillons d'organiser le travail de la manière suivante:
+                <ol>
+                    <li>Gestion de la collection de configurations (creation d'une nouvelle configuration, lister l'ensemble des configurations enregistrées, édition d'une configuration existante et enfin téléchargement d'une configuration au format yaml).</li>
+                    <li>Edition avancée d'une configuration - il s'agira ici de fournir les abstractions graphiques permettant de guider l'utilisateur dans les modifications (correcteur syntaxique en javascript afin de remonter une erreur à l'utilisateur lui empechant de valider les modifications)</li>
+                </ol>
+            </p>
+
+            <p>De manière générale:
+                <ul>
+                <li><b>Les points suivants seront attendus</b>: facilité de création d'une configuration en utilisant Flask + HTML + CSS</li>
+                <li><b>Les points suivants seront appréciés</b>: utilisation d'un plugin CSS, utilisation d'un plugin Javascript, vérification de la syntaxe de la configuration, code dynamique (Ajax), ajout facilité d'ordinateurs et de rôles</li>
+                <li><b>Les points suivants sont en bonus, et seront très fortement appréciés</b>: drag and drop (<a href="https://bevacqua.github.io/dragula/">exemple</a>, <a href="http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested"> un exemple en angularJS</a>), composition de la configuration de manière très graphique (<a href="http://blog.canonical.com/2012/12/10/juju-gui-for-visual-cloud-orchestration/"> exemple</a>), utilisation d'un framework Javascript MVC client-side (<a href="https://reactjs.org/">React</a>, <a href="https://angularjs.org/">AngularJS</a> ) </li>
+    </ul>
+            </p>
+
+            <h3> IV- Contraintes </h3>
+
+            <p><ul>
+    <li>L'application devra se baser sur le framework Flask</li>
+    <li>L'application devra pouvoir générer une configuration sous forme d'un document Yaml valide</li>
+    <li>L'application devra mettre en oeuvre ce qui a été montré en cours, à savoir:
+        <ul>
+            <li>définitions de fonctions générant des vues</li>
+            <li>créations de formulaires</li>
+            <li>utilisation des templates</li>
+            <li>stockage de données dans une base de données</li>
+            <li>Utilisation d'un framework CSS et utilisation de Javascript</li>
+        </ul>
+    </li>
+    <li>Un accent devra être mis sur l'ergonomie de l'application</li>
+
+    </li>
+</ul></p>
+
+    <h3>   V- Techniques avancées </h3>
+    <li>Relations OneToOne, OneToMany, ManyToMany <a href="http://docs.sqlalchemy.org/en/rel_0_9/orm/basic_relationships.html">Documentation</a></li>
+    
+<h3> VI- Quelques pistes ergonomiques</h3>
+<h5>A- Intégrer une vue arborescente dans une page web</h5>
+<p><ul>
+    <li><a href="https://www.jstree.com/">jsTree</a></li>
+    <li><a href="https://github.com/zgs225/easy-tree">easyTree</a> (<a href="http://zgs225.github.io/easy-tree/">exemple</a> ) </li>
+</ul></p>
+
+<h5>B- Intégrer un éditeur de code source dans une page web</h5>
+<p><ul>
+    <li><a href="https://codemirror.net">CodeMirror</a></li>
+    <li><a href="https://codemirror.net/mode/yaml/">Plugin Yaml pour codeMirror</a></li>
+</ul></p>
+
+
+<h5>C- Jolis thèmes pour Bootstrap</h5>
+<ul>
+    <li>Thèmes pour bootstrap (<a href="https://bootswatch.com/4-alpha/">bootswatch</a>)</li>
+    <li>SB Admin 2 (<a href="https://startbootstrap.com/template-overviews/sb-admin-2/">exemple</a>) </li>
+</ul>
+
+
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+
+<script>
+
+ $.map( $(".code"), function(code_tag) {
+     var editor = CodeMirror.fromTextArea(code_tag, {
+         mode: {name: "yaml",
+                version: 3,
+                singleLineStringErrors: false},
+         lineNumbers: true,
+         indentUnit: 4,
+         matchBrackets: true,
+         readOnly: true
+     });
+ });
+
+ $.map( $(".code_no_line_numbers"), function(code_tag) {
+     var editor = CodeMirror.fromTextArea(code_tag, {
+         mode: {name: "yaml",
+                version: 3,
+                singleLineStringErrors: false},
+         lineNumbers: false,
+         indentUnit: 4,
+         matchBrackets: true,
+         readOnly: true
+     });
+ });
+
+
+
+
+</script>
+</body>
+</html>
