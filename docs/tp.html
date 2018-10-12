@@ -259,7 +259,7 @@ def process_employee_form_function():
 {% endfor %}
 </ul></textarea>
 
-        <h3>III- Toward a prettier website</h3>
+        <h3>IV- Toward a prettier website</h3>
         <h4>A- Implementing a common layout between pages</h4>
 
             <p>We would like to have a kind of navigation bar at the top of each web page. This toolbar will implement:<ul>
@@ -411,7 +411,7 @@ def process_employee_form_function():
         <img style="height: 400px;" src="assets/tp/bootstrap_home.png"/>
         <img style="height: 400px;" src="assets/tp/bootstrap_employee.png"/>
 
-        <h3>IV- Playing with databases</h3>
+        <h3>V- Playing with databases</h3>
         <h4>A- Basic queries</h4>
 
         <h5>1) Query objects</h5>
@@ -457,6 +457,54 @@ db.session.commit()</textarea>
 project.employees.append(employee)
 db.session.add(project)
 db.session.commit()</textarea>
+
+
+        <h3>VI- Adding assets to the application</h3>
+
+            <p>Assets files are files that are used by the browser in addition to the HTML code that is interpreted by a
+                web
+                browser. They can be images, CSS stylesheets or Javascript files.</p>
+
+            <p>In Flask, they are stored in the <b>static</b> folder. Create a <span
+                    class="badge badge-primary">static</span>
+                folder in your project, and then add three folders in the static folder:
+            <ul>
+                <li><span class="badge badge-primary">css</span></li>
+                <li><span class="badge badge-primary">js</span></li>
+                <li><span class="badge badge-primary">img</span></li>
+            </ul>
+            </p>
+
+            <p>We will add a first asset to the web application: create a <span
+                    class="badge badge-primary">theme.css</span> file in
+                the <span class="badge badge-primary">static</span> and fill it with the following code:</p>
+            <textarea class=css_code_no_line_numbers>
+body {
+    padding: 15px;
+    background-color: #EEEEEE;
+}
+
+.main-div {
+    margin: auto;
+}
+
+.delete-link {
+    floating: right;
+}
+</textarea>
+
+            <div class="alert alert-warning" role="alert">
+                <p><strong>Warning!</strong> If you want to learn more about CSS, you can take a look at this tutorial:
+                    <a
+                            href="http://learnlayout.com/"/>learnlayout.com</a></p>
+            </div>
+
+            <p>Then, in the <span class="badge badge-primary">templates/form.html</span> template, add the line in the
+                HTML header:
+            </p>
+            <textarea class=jinja2_code_no_line_numbers>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" type="text/css"/>
+</textarea>
 
         </div>
         <div class="col">
